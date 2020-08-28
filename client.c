@@ -88,6 +88,11 @@ int main(int argc, char **argv) {
 		}
 		count = recv(s,rec_occurrences,BUFSZ*(key_size + 2),0);
 		decodeMessage(rec_occurrences,count,occurrences);
+		printf("Printing occurrences: ");
+		for (size_t i = 0; i < sizeof(occurrences)/sizeof(size_t); i++) {
+			printf("%lu ", occurrences[i]);
+		}
+		printf("\n");
 		if (occurrences[1]>0) {
 			printf("Letter found!\n");
 		}

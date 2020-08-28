@@ -21,12 +21,14 @@ void decodeMessage(char message[], size_t size,
 
 	// printf("[log] message [0] --- %c\n", message[0]);
 	char string_message[BUFSZ];
+	printf("[DEBUG] common.c Received message --- %s\n", message);
 	for (size_t i = 0; i< (size); i++) {
 		if (message[i] == separator) {
+			printf("[DEBUG] common.c String message --- %s\n", string_message);
 			decoded_message[message_step] = (size_t)atoi(string_message);
 			message_step++;
 			index_step = i+1;
-			string_message[0]='\0'; // resetting string
+			memset(string_message,0,BUFSZ); // resetting string
 		}
 		else {
 			string_message[i-index_step]=message[i];

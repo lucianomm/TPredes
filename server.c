@@ -9,7 +9,6 @@
 #include <sys/types.h>
 
 #define BUFSZ 1024
-#define KEY "internet"
 
 void usage(int argc, char **argv) {
     printf("usage: %s <v4|v6> <server port>\n", argv[0]);
@@ -65,11 +64,14 @@ int main(int argc, char **argv) {
         char caddrstr[BUFSZ];
         addrtostr(caddr, caddrstr, BUFSZ);
         printf("[log] connection from %s\n", caddrstr);
+        char key_word[BUFSZ];
+        printf("Type a key-word:\n");
+        scanf("%s", key_word);
 
         char sMessage_one[2*BUFSZ];
         memset(sMessage_one, 0, 2*BUFSZ);
         int messageType = 1;
-        sprintf(sMessage_one,"%d|%lu|",messageType, strlen(KEY));
+        sprintf(sMessage_one,"%d|%lu|",messageType, strlen(key_word));
 
         // Sending Message 1
         size_t count = send(csock, sMessage_one, strlen(sMessage_one)+1, 0);
@@ -89,10 +91,10 @@ int main(int argc, char **argv) {
           memset(rMessage_guess,0,2*BUFSZ);
           count = recv(csock, rMessage_guess, 2*BUFSZ - 1, 0);
           printf("[log] Message guess --- %s\n", rMessage_guess);
-          size_t hit_positions[strlen(KEY)];
+          size_t hit_positions[strlen(key_word)];
           size_t hits = 0;
-          for (size_t i = 0; i < strlen(KEY); i++) {
-            if (rMessage_guess[0] == KEY[i]) {
+          for (size_t i = 0; i < strlen(key_word); i++) {
+            if (rMessage_guess[0] == key_word[i]) {
               hit_positions[hits] = i;
               hits++;
             }
@@ -108,7 +110,7 @@ int main(int argc, char **argv) {
               break;
             }
           }
-          if (total_guessed == strlen(KEY)) { // exit if all letters found
+          if (total_guessed == strlen(key_word)) { // exit if all letters found
             break;
           }
 
@@ -117,8 +119,8 @@ int main(int argc, char **argv) {
           sprintf(sMessage_three,"3|%lu|",hits);
           for (size_t i = 0; i < hits; i++) {
             sprintf(&sMessage_three[strlen(sMessage_three)],"%lu|",hit_positions[i]);
-            // printf("[log] Message 3 --- %s\n", sMessage_three);
           }
+          printf("[DEBUG] Sending message --- %s\n",sMessage_three );
           count = send(csock,sMessage_three,strlen(sMessage_three)+1,0);
           if (count != strlen(sMessage_three)+1) {
             logexit("send");
